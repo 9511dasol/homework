@@ -1,0 +1,63 @@
+.screen {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+}
+
+.check {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    border: 1px solid black;
+    padding: 20px;
+}
+
+.check__input1 {
+    width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.check__input1 label {
+    display: flex;
+    align-items: center;
+}
+
+.check__input1 label span {
+    margin-right: 5px;
+}
+
+.check__input2{
+    width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.check__input2 label {
+    display: flex;
+    align-items: center;
+}
+
+.check__input2 span{
+    margin-right: 5px;
+}
+
+.content{
+    border: 1px solid black;
+    padding: 20px;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.count{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
