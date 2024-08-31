@@ -1,19 +1,19 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import "./Homepage.css";
 // import { Link } from "react-router-dom";
-import { headers, items, companies, Item } from "./Component/ingredients"; // 데이터이스 연결후 삭제 예정
+import { headers, items, companies, Item, Item2 } from "./Component/ingredients"; // 데이터이스 연결후 삭제 예정
 import Modal from "react-modal";
 import Create from "./Component/Create";
 import Modify from "./Component/Modify";
 import Content from "./Component/Content";
 import Paging from "./Component/Paging";
+import axios from "axios";
 Modal.setAppElement("#root");
 
 function Homepage() {
   const [selection, setSelection] = useState<string[]>([]);
   const [now, setNow] = useState<Item[]>(items);
   const [len, setLen] = useState<number>(now.length > 0 ? now.length : 0);
-  const [last, setLast] = useState<number>(len);
   const [company, setCompany] = useState<string>("");
   const [enroller, setEnroller] = useState<string>("");
   const [title, setTitle] = useState<string>("");
@@ -27,19 +27,34 @@ function Homepage() {
   const [spectify, setSpectify] = useState<boolean>(false);
   const [num, setNum] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const limit = 8; // 0 ~ 7
+  const limit = 10; // 0 ~ 7
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [now1, set1Now] = useState<Item2[]>([]);
+
+  const getInfo = async () => {
+    try {
+      const response = await axios.get<Item2[]>('/api/epps');
+      let tenp:Item2[] = []; 
+
+      for (let i = (page - 1) * limit; i < limit * page && i < response.data.length; i++) {
+        tenp.push(response.data[i]);
+      }
+
+      set1Now(tenp);
+      setIsLoading(false);
+      setLen(response.data.length);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    setLen(now.length);
-    console.log(len);
-  }, [make, modi, now]);
+    getInfo();
 
-  // 0 ~ 7, 8 ~ 15
-  useEffect(() => {
-    setNow(
-      now.filter((v, i) => limit * (page - 1) <= i && i <= limit * page - 1)
-    );
-  }, [page]);
+
+  }, [make, modi]);
+
+
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
@@ -195,66 +210,67 @@ function Homepage() {
           <button onClick={checking}>조회</button>
         </div>
       </div>
-      <div className="table">
-        <table>
-          <thead>
-            <tr>
-              {headers.map((header, idx) => (
-                <th key={idx}>
-                  {header.text} {/* 컬럼명 바인딩 */}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {now.map(({ company, order, title, enroller, date }, index) => (
-              <tr key={index}>
-                <td className="ch">
-                  <input
-                    type="checkbox"
-                    checked={selection.includes(index + "")}
-                    onChange={handleCheckboxChange}
-                    value={index}
-                  />
-                </td>
-                <td>{company}</td>
-                <td>{order}</td>
-                <td>
-                  <span
-                    onClick={() => confirm(order ? +order : 0)}
-                    style={{
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {title}
-                  </span>
-                </td>
-                <td>{enroller}</td>
-                <td>{date.toISOString().split("T")[0]}</td>
-              </tr>
+      {isLoading ? "Loding" : <div className="table">
+      <table>
+        <thead>
+          <tr>
+            {headers.map((header, idx) => (
+              <th key={idx}>
+                {header.text} {/* 컬럼명 바인딩 */}
+              </th>
             ))}
-            <tr>
-              <td colSpan={headers.length + 1} style={{ textAlign: "center" }}>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <span>
-                    <Paging
-                      limit={limit}
-                      page={page}
-                      total={now.length}
-                      setPage={setPage}
-                    />
-                  </span>
-                  <span>Total Items: {len}</span>
-                </div>
+          </tr>
+        </thead>
+        <tbody>
+          {now1.map(({ company, reg_Date, reg_User, title, seq }, index) => (
+            <tr key={index}>
+              <td className="ch">
+                <input
+                  type="checkbox"
+                  checked={selection.includes(index + "")}
+                  onChange={handleCheckboxChange}
+                  value={index}
+                />
               </td>
+              <td>{company}</td>
+              <td>{seq}</td>
+              <td>
+                <span
+                  onClick={() => confirm(seq ? +seq : 0)}
+                  style={{
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
+                >
+                  {title}
+                </span>
+              </td>
+              <td>{reg_User}</td>
+              <td>{reg_Date.split("T")[0]}</td>
             </tr>
-          </tbody>
-        </table>
-      </div>
+          ))}
+          <tr>
+            <td colSpan={headers.length + 1} style={{ textAlign: "center" }}>
+              <div
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <span>
+                  <Paging
+                    limit={limit}
+                    page={page}
+                    total={now1.length}
+                    setPage={setPage}
+                  />
+                </span>
+                <span>Total Items: {len}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>}
+
       <div className="buttons">
         <button onClick={openmake}>등록</button>
         <button

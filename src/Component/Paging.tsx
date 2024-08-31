@@ -43,7 +43,7 @@ function Paging({ limit, page, total, setPage }: Props) {
   }, [pageStart, totalPage]);
 
   const handleClick = (pageNumber:number) => setPage(pageNumber);
-
+ 
   return (
     <Page>
       <button onClick={() => handleClick(1)}>{`<<`}</button>

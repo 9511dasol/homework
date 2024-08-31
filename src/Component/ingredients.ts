@@ -32,12 +32,22 @@ export const headers:Header[] = [
 
 export interface Item {
     company: string;
-    order: string;
-    date: Date;
-    enroller: string;
-    title: string;
     content: string;
     password: string;
+    date: Date;
+    enroller: string;
+    order: string;
+    title: string;
+}
+
+export interface Item2 {
+    company: string;
+    content: string;
+    password: string;
+    reg_Date: string;
+    reg_User: string;
+    seq: string;
+    title: string;
 }
 
 export const items:Item[] = [
